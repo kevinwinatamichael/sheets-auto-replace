@@ -1,27 +1,22 @@
+import os
+import pickle
 import unittest
+
+from google.auth.transport.requests import Request
+from googleapiclient.discovery import build
+from google_auth_oauthlib.flow import InstalledAppFlow
+
+# If modifying these scopes, delete the file token.pickle.
+SCOPES = ['https://www.googleapis.com/auth/spreadsheets']
+
+# The ID and range of a sample spreadsheet.
+SAMPLE_SPREADSHEET_ID = '1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74OgvE2upms'
+SAMPLE_RANGE_NAME = 'Class Data!A2:E'
 
 
 class LearningTest(unittest.TestCase):
-    def test_quick_start(self):
-        """
-            Shows basic usage of the Sheets API.
-            Prints values from a sample spreadsheet.
-        """
-
-        import pickle
-
-        import os.path
-        from googleapiclient.discovery import build
-        from google_auth_oauthlib.flow import InstalledAppFlow
-        from google.auth.transport.requests import Request
-
-        # If modifying these scopes, delete the file token.pickle.
-        SCOPES = ['https://www.googleapis.com/auth/spreadsheets.readonly']
-
-        # The ID and range of a sample spreadsheet.
-        SAMPLE_SPREADSHEET_ID = '1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74OgvE2upms'
-        SAMPLE_RANGE_NAME = 'Class Data!A2:E'
-
+    @staticmethod
+    def get_creds():
         creds = None
         # The file token.pickle stores the user's access and refresh tokens, and is
         # created automatically when the authorization flow completes for the first
@@ -40,7 +35,10 @@ class LearningTest(unittest.TestCase):
             # Save the credentials for the next run
             with open('token.pickle', 'wb') as token:
                 pickle.dump(creds, token)
+        return creds
 
+    def test_quick_start(self):
+        creds = LearningTest.get_creds()
         service = build('sheets', 'v4', credentials=creds)
 
         # Call the Sheets API
@@ -58,6 +56,19 @@ class LearningTest(unittest.TestCase):
                 print('%s, %s' % (row[0], row[4]))
 
         self.assertTrue(True)
+
+    def test_create_sheet(self):
+        title = 'test_title'
+        creds = LearningTest.get_creds()
+        service = build('sheets', 'v4', credentials=creds)
+        spreadsheet = {
+            'properties': {
+                'title': title
+            }
+        }
+        spreadsheet = service.spreadsheets().create(body=spreadsheet,
+                                                    fields='spreadsheetId').execute()
+        print('Spreadsheet ID: {0}'.format(spreadsheet.get('spreadsheetId')))
 
 
 if __name__ == '__main__':
