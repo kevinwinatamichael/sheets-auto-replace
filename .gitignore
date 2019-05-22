@@ -1,6 +1,13 @@
+# Credentials
+credentials.json
+token.pickle
+
+# Pycharm
+.idea/workspace.xml
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
-*.py[cod]
+*.py[cod]i:
 *$py.class
 
 # C extensions
