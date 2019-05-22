@@ -122,5 +122,69 @@ class LearningTest(unittest.TestCase):
                                            .get('updates')
                                            .get('updatedCells')))
 
+    def test_search_term(self):
+        review_spr_id = '1VYgGx0bvtWnmR9mpTh1i5nZT652vnevdx0ibNXX_8DQ'
+        keyword_spr_id = '1p7pDibKv14BChqyZpTYgUtrgW27wtN7Rk2BnfnIk__o'
+        review_range = "'Benchmarking new'!A1:B1000"
+        keyword_range = "'to-benchmark'!A1:B1000"
+
+        value_render_option = 'FORMATTED_VALUE'
+        date_time_render_option = 'SERIAL_NUMBER'
+        request = self.service.spreadsheets().values().get(spreadsheetId=review_spr_id, range=review_range,
+                                                           valueRenderOption=value_render_option,
+                                                           dateTimeRenderOption=date_time_render_option)
+        response = request.execute()
+        review_values = response['values'][1:]
+
+        to_replace_index = []
+        for i in range(len(review_values)):
+            row = review_values[i]
+            if len(row) == 2:
+                to_replace_index.append(i)
+
+        # get the index
+        request = self.service.spreadsheets().values().get(spreadsheetId=keyword_spr_id, range=keyword_range,
+                                                           valueRenderOption=value_render_option,
+                                                           dateTimeRenderOption=date_time_render_option)
+        response = request.execute()
+        keyword_values = response['values'][1:]
+        index = None
+        for i in range(len(keyword_values)):
+            if len(keyword_values[i]) == 1:
+                index = i
+                break
+        new_keywords = []
+        for i in range(index, index+len(to_replace_index)):
+            new_keywords.append(keyword_values[i][0])
+        keywords_to_check_range = "'to-benchmark'!B{}:B{}".format(index+2, index+2+len(to_replace_index))
+        values = [[1]]*len(to_replace_index)
+        body = {
+            'values': values
+        }
+        checking_keywords_request = self.service.spreadsheets().values().update(
+            spreadsheetId=keyword_spr_id, range=keywords_to_check_range,
+            valueInputOption="USER_ENTERED", body=body).execute()
+
+        # replace the keywords
+        data = []
+        for i in to_replace_index:
+            data.append({
+                "range": "'Benchmarking new'!A{}:B{}".format(i+2, i+2),
+                "values": [
+                    [new_keywords.pop(), '']
+                ]
+            })
+        batch_update_values_request_body = {
+            'value_input_option': 'RAW',
+
+            'data': data,
+
+        }
+
+        request = self.service.spreadsheets().values().batchUpdate(spreadsheetId=review_spr_id,
+                                                              body=batch_update_values_request_body)
+        response = request.execute()
+
+
 if __name__ == '__main__':
     unittest.main()
