@@ -18,6 +18,7 @@ SAMPLE_RANGE_NAME = 'Class Data!A2:E'
 class LearningTest(unittest.TestCase):
     def setUp(self):
         self.service = build('sheets', 'v4', credentials=LearningTest.get_creds())
+        self.spreadsheet_id = '1VYgGx0bvtWnmR9mpTh1i5nZT652vnevdx0ibNXX_8DQ'
 
     @staticmethod
     def get_creds():
@@ -75,16 +76,33 @@ class LearningTest(unittest.TestCase):
 
     def test_read_value(self):
         service = self.service
-        spreadsheet_id = '1VYgGx0bvtWnmR9mpTh1i5nZT652vnevdx0ibNXX_8DQ'
         range_ = 'A1:B3'
 
         value_render_option = 'FORMATTED_VALUE'
         date_time_render_option = 'SERIAL_NUMBER'
-        request = service.spreadsheets().values().get(spreadsheetId=spreadsheet_id, range=range_,
+        request = service.spreadsheets().values().get(spreadsheetId=self.spreadsheet_id, range=range_,
                                                       valueRenderOption=value_render_option,
                                                       dateTimeRenderOption=date_time_render_option)
         response = request.execute()
         pprint(response)
+
+    def test_write(self):
+        values = [
+            [
+                'Kambing', '=1+2'
+            ],
+            [
+                'kucing'
+            ]
+        ]
+        body = {
+            'values': values
+        }
+        result = self.service.spreadsheets().values().update(
+            spreadsheetId=self.spreadsheet_id, range='B7:C9',
+            valueInputOption="USER_ENTERED", body=body).execute()
+        print('{0} cells updated.'.format(result.get('updatedCells')))
+
 
 if __name__ == '__main__':
     unittest.main()
