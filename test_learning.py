@@ -130,16 +130,39 @@ class LearningTest(unittest.TestCase):
 
         value_render_option = 'FORMATTED_VALUE'
         date_time_render_option = 'SERIAL_NUMBER'
-        request = self.service.spreadsheets().values().get(spreadsheetId=review_spr_id, range=review_range,
-                                                           valueRenderOption=value_render_option,
-                                                           dateTimeRenderOption=date_time_render_option)
+        request = self.service.spreadsheets().get(spreadsheetId=review_spr_id, ranges=[review_range], includeGridData=True)
         response = request.execute()
-        review_values = response['values'][1:]
+        # import json
+        # with open('data.txt', 'w') as outfile:
+        #     json.dump(response, outfile)
+        # return True
+        rows = response['sheets'][0]['data'][0]['rowData'][1:]
+        review_rows = []
+        for row in rows:
+            my_row = []
+            for value in row['values']:
+                color = value['effectiveFormat']['backgroundColor']
+                if 'red' not in color:
+                    color['red'] = 0
+                if 'blue' not in color:
+                    color['blue'] = 0
+                if 'green' not in color:
+                    color['green'] = 0
+                if 'effectiveValue' in value:
+                    my_row.append({
+                        'value': value['effectiveValue']['stringValue'],
+                        'colorSum': color['red']+color['blue']+color['green']
+                    })
+                else:
+                    my_row.append({
+                        'value': '',
+                        'colorSum': color['red']+color['blue']+color['green']
+                    })
+            review_rows.append(my_row)
 
         to_replace_index = []
-        for i in range(len(review_values)):
-            row = review_values[i]
-            if len(row) == 2:
+        for i in range(len(review_rows)):
+            if review_rows[i][0]['value'] != '' and review_rows[i][0]['colorSum'] != 3:
                 to_replace_index.append(i)
 
         # get the index
@@ -169,11 +192,12 @@ class LearningTest(unittest.TestCase):
         data = []
         for i in to_replace_index:
             data.append({
-                "range": "'Benchmarking new'!A{}:B{}".format(i+2, i+2),
+                "range": "'Benchmarking new'!A{}:A{}".format(i+2, i+2),
                 "values": [
-                    [new_keywords.pop(), '']
+                    [new_keywords.pop()]
                 ]
             })
+
         batch_update_values_request_body = {
             'value_input_option': 'RAW',
 
@@ -184,6 +208,46 @@ class LearningTest(unittest.TestCase):
         request = self.service.spreadsheets().values().batchUpdate(spreadsheetId=review_spr_id,
                                                               body=batch_update_values_request_body)
         response = request.execute()
+        pprint(response)
+        cellFormat = {
+                            "backgroundColor": {
+                                "red": 1,
+                                "blue": 1,
+                                "green": 1,
+                            },
+                            "textFormat": {
+                                "bold": True
+                            }
+                        }
+        requests = []
+        for i in to_replace_index:
+            requests.append(
+                {
+                    'updateCells': {
+                        'rows': {
+                            'values': [
+                                {
+                                    "effectiveFormat": cellFormat,
+                                    "userEnteredFormat": cellFormat
+
+                                }
+                            ]
+                        },
+                        'fields': 'effectiveFormat.backgroundColor,userEnteredFormat.backgroundColor,\
+                                  effectiveFormat.textFormat.bold,userEnteredFormat.textFormat.bold',
+                        'start': {
+                            "sheetId": 0,
+                            "rowIndex": (i + 1),
+                            "columnIndex": 0,
+                        }
+                    }
+                }
+            )
+        response = self.service.spreadsheets().batchUpdate(spreadsheetId=review_spr_id, body=
+        {
+            'requests': requests
+        }).execute()
+        pprint(response)
 
 
 if __name__ == '__main__':
