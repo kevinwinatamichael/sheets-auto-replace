@@ -1,6 +1,7 @@
 import os
 import pickle
 import unittest
+from pprint import pprint
 
 from google.auth.transport.requests import Request
 from googleapiclient.discovery import build
@@ -15,6 +16,9 @@ SAMPLE_RANGE_NAME = 'Class Data!A2:E'
 
 
 class LearningTest(unittest.TestCase):
+    def setUp(self):
+        self.service = build('sheets', 'v4', credentials=LearningTest.get_creds())
+
     @staticmethod
     def get_creds():
         creds = None
@@ -38,8 +42,7 @@ class LearningTest(unittest.TestCase):
         return creds
 
     def test_quick_start(self):
-        creds = LearningTest.get_creds()
-        service = build('sheets', 'v4', credentials=creds)
+        service = self.service
 
         # Call the Sheets API
         sheet = service.spreadsheets()
@@ -57,10 +60,10 @@ class LearningTest(unittest.TestCase):
 
         self.assertTrue(True)
 
+    @unittest.skip
     def test_create_sheet(self):
         title = 'test_title'
-        creds = LearningTest.get_creds()
-        service = build('sheets', 'v4', credentials=creds)
+        service = self.service
         spreadsheet = {
             'properties': {
                 'title': title
@@ -70,6 +73,18 @@ class LearningTest(unittest.TestCase):
                                                     fields='spreadsheetId').execute()
         print('Spreadsheet ID: {0}'.format(spreadsheet.get('spreadsheetId')))
 
+    def test_read_value(self):
+        service = self.service
+        spreadsheet_id = '1VYgGx0bvtWnmR9mpTh1i5nZT652vnevdx0ibNXX_8DQ'
+        range_ = 'A1:B3'
+
+        value_render_option = 'FORMATTED_VALUE'
+        date_time_render_option = 'SERIAL_NUMBER'
+        request = service.spreadsheets().values().get(spreadsheetId=spreadsheet_id, range=range_,
+                                                      valueRenderOption=value_render_option,
+                                                      dateTimeRenderOption=date_time_render_option)
+        response = request.execute()
+        pprint(response)
 
 if __name__ == '__main__':
     unittest.main()
