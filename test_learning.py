@@ -103,6 +103,24 @@ class LearningTest(unittest.TestCase):
             valueInputOption="USER_ENTERED", body=body).execute()
         print('{0} cells updated.'.format(result.get('updatedCells')))
 
+    def test_append(self):
+        values = [
+            [
+                'Kambingappend', '3 May 2019'
+            ],
+            [
+                'kucing', 'kolak', 'dingin'
+            ]
+        ]
+        body = {
+            'values': values
+        }
+        result = self.service.spreadsheets().values().append(
+            spreadsheetId=self.spreadsheet_id, range='A1:B9',
+            valueInputOption='USER_ENTERED', body=body).execute()
+        print('{0} cells appended.'.format(result
+                                           .get('updates')
+                                           .get('updatedCells')))
 
 if __name__ == '__main__':
     unittest.main()
