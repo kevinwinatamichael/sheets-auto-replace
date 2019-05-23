@@ -2,6 +2,7 @@ import os
 import pickle
 
 from google.auth.transport.requests import Request
+from googleapiclient.discovery import build
 from google_auth_oauthlib.flow import InstalledAppFlow
 
 import settings
@@ -9,7 +10,7 @@ import settings
 
 class Creds:
     @staticmethod
-    def get_creds():
+    def get_service():
         pickle_path = os.path.join(settings.ROOT_DIR, "token.pickle")
         creds = None
         # The file token.pickle stores the user's access and refresh tokens, and is
@@ -30,4 +31,6 @@ class Creds:
             # Save the credentials for the next run
             with open(pickle_path, 'wb') as token:
                 pickle.dump(creds, token)
-        return creds
+
+        service = build('sheets', 'v4', credentials=creds)
+        return service
