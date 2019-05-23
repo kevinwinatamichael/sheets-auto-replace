@@ -1,0 +1,2 @@
+class PlainCell:
+    pass

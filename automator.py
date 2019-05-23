@@ -1,0 +1,2 @@
+class Automator:
+    pass

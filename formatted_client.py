@@ -1,0 +1,2 @@
+class FormattedClient:
+    pass

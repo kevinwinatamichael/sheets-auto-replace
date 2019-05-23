@@ -1,0 +1,2 @@
+class PlainClient:
+    pass
