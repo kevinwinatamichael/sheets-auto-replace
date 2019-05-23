@@ -1,7 +1,7 @@
 import unittest
 
 
-class AutomatorTestCases(unittest.TestCase):
+class ClientTestCases(unittest.TestCase):
     pass
 
 
