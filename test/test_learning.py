@@ -126,8 +126,8 @@ class LearningTest(unittest.TestCase):
     def test_search_term(self):
         review_spr_id = '1AjgnY_4uuwVyLYNHwxnr2UPHd93onAMnOD5veWFER20'
         keyword_spr_id = '1LXNphdC92rbOJhA720GGb1BNmAhX20fWIHr-e_fO--Q'
-        base_index = 4984
-        review_range = "'Benchmarking_new'!A{}:A5006".format(base_index)
+        base_index = 4852
+        review_range = "'Benchmarking_new'!A{}:A5101".format(base_index)
         keyword_range = "to-benchmark!A1:B1000"
 
         value_render_option = 'FORMATTED_VALUE'
@@ -150,7 +150,7 @@ class LearningTest(unittest.TestCase):
                     color['blue'] = 0
                 if 'green' not in color:
                     color['green'] = 0
-                if 'effectiveValue' in value:
+                if 'effectiveValue' in value and 'stringValue' in value['effectiveValue']:
                     my_row.append({
                         'value': value['effectiveValue']['stringValue'],
                         'colorSum': color['red']+color['blue']+color['green']
@@ -239,7 +239,7 @@ class LearningTest(unittest.TestCase):
                                   effectiveFormat.textFormat.bold,userEnteredFormat.textFormat.bold',
                         'start': {
                             "sheetId": 1357095039,
-                            "rowIndex": (i + 1),
+                            "rowIndex": (base_index + i),
                             "columnIndex": 0,
                         }
                     }
