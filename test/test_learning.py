@@ -7,7 +7,8 @@ from google.auth.transport.requests import Request
 from googleapiclient.discovery import build
 from google_auth_oauthlib.flow import InstalledAppFlow
 
-# If modifying these scopes, delete the file token.pickle.
+from creds import Creds
+
 SCOPES = ['https://www.googleapis.com/auth/spreadsheets']
 
 # The ID and range of a sample spreadsheet.
@@ -17,7 +18,7 @@ SAMPLE_RANGE_NAME = 'Class Data!A2:E'
 
 class LearningTest(unittest.TestCase):
     def setUp(self):
-        self.service = build('sheets', 'v4', credentials=LearningTest.get_creds())
+        self.service = Creds.get_service()
         self.spreadsheet_id = '1VYgGx0bvtWnmR9mpTh1i5nZT652vnevdx0ibNXX_8DQ'
 
     @staticmethod
@@ -123,10 +124,11 @@ class LearningTest(unittest.TestCase):
                                            .get('updatedCells')))
 
     def test_search_term(self):
-        review_spr_id = '1VYgGx0bvtWnmR9mpTh1i5nZT652vnevdx0ibNXX_8DQ'
-        keyword_spr_id = '1p7pDibKv14BChqyZpTYgUtrgW27wtN7Rk2BnfnIk__o'
-        review_range = "'Benchmarking new'!A1:B1000"
-        keyword_range = "'to-benchmark'!A1:B1000"
+        review_spr_id = '1AjgnY_4uuwVyLYNHwxnr2UPHd93onAMnOD5veWFER20'
+        keyword_spr_id = '1LXNphdC92rbOJhA720GGb1BNmAhX20fWIHr-e_fO--Q'
+        base_index = 4984
+        review_range = "'Benchmarking_new'!A{}:A5006".format(base_index)
+        keyword_range = "to-benchmark!A1:B1000"
 
         value_render_option = 'FORMATTED_VALUE'
         date_time_render_option = 'SERIAL_NUMBER'
@@ -166,9 +168,9 @@ class LearningTest(unittest.TestCase):
                 to_replace_index.append(i)
 
         # get the index
-        request = self.service.spreadsheets().values().get(spreadsheetId=keyword_spr_id, range=keyword_range,
-                                                           valueRenderOption=value_render_option,
-                                                           dateTimeRenderOption=date_time_render_option)
+        request = self.service.spreadsheets().values().get(spreadsheetId=keyword_spr_id, range=keyword_range)
+                                                           # valueRenderOption=value_render_option,
+                                                           # dateTimeRenderOption=date_time_render_option)
         response = request.execute()
         keyword_values = response['values'][1:]
         index = None
@@ -187,12 +189,12 @@ class LearningTest(unittest.TestCase):
         checking_keywords_request = self.service.spreadsheets().values().update(
             spreadsheetId=keyword_spr_id, range=keywords_to_check_range,
             valueInputOption="USER_ENTERED", body=body).execute()
-
+        pprint(to_replace_index)
         # replace the keywords
         data = []
         for i in to_replace_index:
             data.append({
-                "range": "'Benchmarking new'!A{}:A{}".format(i+2, i+2),
+                "range": "'Benchmarking_new'!A{}:A{}".format(base_index+i+1, base_index+i+1),
                 "values": [
                     [new_keywords.pop()]
                 ]
@@ -236,7 +238,7 @@ class LearningTest(unittest.TestCase):
                         'fields': 'effectiveFormat.backgroundColor,userEnteredFormat.backgroundColor,\
                                   effectiveFormat.textFormat.bold,userEnteredFormat.textFormat.bold',
                         'start': {
-                            "sheetId": 0,
+                            "sheetId": 1357095039,
                             "rowIndex": (i + 1),
                             "columnIndex": 0,
                         }
@@ -244,6 +246,46 @@ class LearningTest(unittest.TestCase):
                 }
             )
         response = self.service.spreadsheets().batchUpdate(spreadsheetId=review_spr_id, body=
+        {
+            'requests': requests
+        }).execute()
+        pprint(response)
+
+    def test_color(self):
+        cellFormat = {
+            "backgroundColor": {
+                "red": 1,
+                "blue": 1,
+                "green": 1,
+            },
+            "textFormat": {
+                "bold": True
+            }
+        }
+        requests = []
+        requests.append(
+            {
+                'updateCells': {
+                    'rows': {
+                        'values': [
+                            {
+                                "effectiveFormat": cellFormat,
+                                "userEnteredFormat": cellFormat
+
+                            }
+                        ]
+                    },
+                    'fields': 'effectiveFormat.backgroundColor,userEnteredFormat.backgroundColor,\
+                                      effectiveFormat.textFormat.bold,userEnteredFormat.textFormat.bold',
+                    'start': {
+                        "sheetId": 2036055998,
+                        "rowIndex": 263,
+                        "columnIndex": 0,
+                    }
+                }
+            }
+        )
+        response = self.service.spreadsheets().batchUpdate(spreadsheetId='1LXNphdC92rbOJhA720GGb1BNmAhX20fWIHr-e_fO--Q', body=
         {
             'requests': requests
         }).execute()
