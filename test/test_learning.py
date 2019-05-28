@@ -175,9 +175,13 @@ class LearningTest(unittest.TestCase):
                     color['blue'] = 0
                 if 'green' not in color:
                     color['green'] = 0
-                if 'effectiveValue' in value and 'stringValue' in value['effectiveValue']:
+                if 'effectiveValue' in value:
+                    if 'stringValue' in value['effectiveValue']:
+                        value_to_append = value['effectiveValue']['stringValue']
+                    elif 'numberValue' in value['effectiveValue']:
+                        value_to_append = value['effectiveValue']['numberValue']
                     my_row.append({
-                        'value': value['effectiveValue']['stringValue'],
+                        'value': value_to_append,
                         'colorSum': color['red']+color['blue']+color['green']
                     })
                 else:
