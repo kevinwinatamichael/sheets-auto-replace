@@ -89,7 +89,7 @@ class LearningTest(unittest.TestCase):
 
     def test_ph_search(self):
         service = self.service
-        range_ = "'Benchmarking_new'!A2:J5101"
+        range_ = "'Benchmarking_new'!A2:M4501"
 
         value_render_option = 'FORMATTED_VALUE'
         date_time_render_option = 'SERIAL_NUMBER'
