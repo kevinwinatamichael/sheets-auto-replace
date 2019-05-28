@@ -87,6 +87,31 @@ class LearningTest(unittest.TestCase):
         response = request.execute()
         pprint(response)
 
+    def test_ph_search(self):
+        service = self.service
+        range_ = "'Benchmarking_new'!A2:J5101"
+
+        value_render_option = 'FORMATTED_VALUE'
+        date_time_render_option = 'SERIAL_NUMBER'
+        request = service.spreadsheets().values().get(spreadsheetId='1AjgnY_4uuwVyLYNHwxnr2UPHd93onAMnOD5veWFER20', range=range_,
+                                                      valueRenderOption=value_render_option,
+                                                      dateTimeRenderOption=date_time_render_option)
+        response = request.execute()
+        data1 = response['values']
+
+        from tqdm import tqdm
+        d = {}
+        for i in tqdm(range(len(data1))):
+            try:
+                d[data1[i][0]] = data1[i]
+            except IndexError:
+                d[data1[i][0]] = ["NA"]
+        import json
+
+        with open('PH_data.json', 'w') as fp:
+            json.dump(d, fp)
+
+
     def test_write(self):
         values = [
             [
