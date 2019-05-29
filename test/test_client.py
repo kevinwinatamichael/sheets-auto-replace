@@ -5,18 +5,65 @@ from creds import Creds
 
 
 class ClientTestUtils:
-    @staticmethod
-    def create_spreadsheet():
-        service = Creds.get_service()
-        spreadsheet = {
-            'properties': {
-                'title': 'dummy_title'
-            }
-        }
-        return service.spreadsheets().create(body=spreadsheet, fields='spreadsheetId').execute()
+    def __init__(self, spreadsheet_id):
+        self.service = Creds.get_service()
+        self.spreadsheet_id = spreadsheet_id
 
+    def clear_spreadsheet(self):
+        sheet_id_list = ClientTestUtils.get_sheet_id_list(self.spreadsheet_id)
+
+        self.create_new_sheet()
+
+        request = []
+        for sheet_id in sheet_id_list:
+            request.append(
+                {
+                    "deleteSheet": {
+                        "sheetId": sheet_id
+                    }
+                }
+            )
+        ClientTestUtils.service.spreadsheets().batchUpdate(
+            spreadsheetId=self.spreadsheet_id,
+            body={
+                "requests": request
+            }
+        ).execute()
+
+    def get_sheet_id_list(self):
+        response = ClientTestUtils.service.spreadsheets().get(spreadsheetId=self.spreadsheet_id).execute()
+        sheets_list = response['sheets']
+        sheet_id_list = []
+        for sheet in sheets_list:
+            sheet_id_list.append(sheet['properties']['sheetId'])
+        return sheet_id_list
+
+    def create_new_sheet(self):
+        ClientTestUtils.service.spreadsheets().batchUpdate(
+            spreadsheetId=self.spreadsheet_id,
+            body={
+                "requests": [
+                    {
+                        "addSheet": {
+                            "properties": {
+                                "title": "UNIT TEST",
+                                "gridProperties": {
+                                    "rowCount": 100,
+                                    "columnCount": 20
+                                }
+                            }
+                        }
+                    }
+                ]
+            }
+        ).execute()
 
 class ClientTestCases(unittest.TestCase):
+
+    def setUp(self) -> None:
+        util = ClientTestUtils(self.spreadhsheet_id)
+        util.clear_spreadsheet()
+        self.spreadhsheet_id = '1E5AbARR9-wF23aZbsnbnNaz59pGI7-vjmOiiAf7ck5w'
 
     def test_constructor(self):
         sheet_id = 'dummy_id'
@@ -28,10 +75,7 @@ class ClientTestCases(unittest.TestCase):
         self.assertEqual(expected_service.__class__.__name__, client._service.__class__.__name__)
 
     def test_set_cell(self):
-        spreadsheet_id = ClientTestUtils.create_spreadsheet().get('spreadsheetId')
-        sheet_name = 'Sheet1'  # default sheet name
-        # TODO complete
-
+        pass
 
 if __name__ == '__main__':
     unittest.main()
