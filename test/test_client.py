@@ -91,8 +91,8 @@ class ClientTestCases(unittest.TestCase):
 
         values = self.util.read_cell('A1:B2')
 
-        for row in values:
-            self.assertCountEqual(exp_values, values)
+        for i, row in enumerate(values):
+            self.assertCountEqual(exp_values[i], row)
 
     def test__get_sheet_id(self):
         client = Client(spreadsheet_id=self.spreadsheet_id, sheet_name=self.sheet_name)
