@@ -1,5 +1,6 @@
 import unittest
 
+from cell import Cell
 from client import Client
 from creds import Creds
 
@@ -23,7 +24,7 @@ class ClientTestUtils:
                     }
                 }
             )
-        ClientTestUtils.service.spreadsheets().batchUpdate(
+        self.service.spreadsheets().batchUpdate(
             spreadsheetId=self.spreadsheet_id,
             body={
                 "requests": request
@@ -31,7 +32,7 @@ class ClientTestUtils:
         ).execute()
 
     def get_sheet_id_list(self):
-        response = ClientTestUtils.service.spreadsheets().get(spreadsheetId=self.spreadsheet_id).execute()
+        response = self.service.spreadsheets().get(spreadsheetId=self.spreadsheet_id).execute()
         sheets_list = response['sheets']
         sheet_id_list = []
         for sheet in sheets_list:
@@ -39,7 +40,7 @@ class ClientTestUtils:
         return sheet_id_list
 
     def create_new_sheet(self):
-        ClientTestUtils.service.spreadsheets().batchUpdate(
+        self.service.spreadsheets().batchUpdate(
             spreadsheetId=self.spreadsheet_id,
             body={
                 "requests": [
@@ -58,12 +59,19 @@ class ClientTestUtils:
             }
         ).execute()
 
+    def read_cell(self, range_):
+        request = self.service.spreadsheets().values().get(spreadsheetId=self.spreadsheet_id, range=range_)
+        response = request.execute()
+        return response['values']
+
+
 class ClientTestCases(unittest.TestCase):
 
     def setUp(self) -> None:
-        util = ClientTestUtils(self.spreadhsheet_id)
-        util.clear_spreadsheet()
-        self.spreadhsheet_id = '1E5AbARR9-wF23aZbsnbnNaz59pGI7-vjmOiiAf7ck5w'
+        self.spreadsheet_id = '1E5AbARR9-wF23aZbsnbnNaz59pGI7-vjmOiiAf7ck5w'
+        self.sheet_name = 'UNIT TEST'
+        self.util = ClientTestUtils(self.spreadsheet_id)
+        self.util.clear_spreadsheet()
 
     def test_constructor(self):
         sheet_id = 'dummy_id'
@@ -75,7 +83,17 @@ class ClientTestCases(unittest.TestCase):
         self.assertEqual(expected_service.__class__.__name__, client._service.__class__.__name__)
 
     def test_set_cell(self):
-        pass
+        client = Client(sheet_id=self.spreadsheet_id, sheet_name=self.sheet_name)
+        sheet_range = 'A1:B2'
+        exp_values = [[Cell("foo"), Cell("bar")], [Cell("baz")]]
+
+        client.set(sheet_range, exp_values)
+
+        values = self.util.read_cell('A1:B2')
+
+        for row in values:
+            self.assertCountEqual(exp_values, values)
+
 
 if __name__ == '__main__':
     unittest.main()
