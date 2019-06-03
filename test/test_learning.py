@@ -8,6 +8,7 @@ from googleapiclient.discovery import build
 from google_auth_oauthlib.flow import InstalledAppFlow
 
 from creds import Creds
+from test.constants import Constants
 
 SCOPES = ['https://www.googleapis.com/auth/spreadsheets']
 
@@ -149,6 +150,8 @@ class LearningTest(unittest.TestCase):
                                            .get('updatedCells')))
 
     def test_search_term(self):
+        country = 'SG'
+
         # BASE_INDEX is EXLUSIVE but TOP_INDEX is INCLUSIVE
         countries = {
             'PH': {
@@ -184,7 +187,6 @@ class LearningTest(unittest.TestCase):
                 'sheetId': 222824563,
             },
         }
-        country = 'MY'
         review_sheet_name = countries[country]['review_sheet_name']
         base_index = countries[country]['base_index']
         top_index = countries[country]['top_index']
@@ -354,6 +356,9 @@ class LearningTest(unittest.TestCase):
         }).execute()
         pprint(response)
 
+    def test_get_grid_data(self):
+        sheet = self.service.spreadsheets().get(spreadsheetId=Constants.unit_test_sheet_id).execute()
+        pprint(sheet['sheets'][0]['properties'])
 
 if __name__ == '__main__':
     unittest.main()
