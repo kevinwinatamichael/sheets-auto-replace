@@ -1,3 +1,5 @@
+import copy
+
 from cell import Cell
 
 
@@ -11,7 +13,7 @@ class FormattedCell(Cell):
         if not isinstance(bold, bool):
             raise TypeError("bold must be boolean")
 
-        if {"red", "green", "blue"}.issubset(set(bgColor.keys())):
+        if not {"red", "green", "blue"}.issubset(set(bgColor.keys())):
             raise KeyError("bgColor must contain red, green, and blue keys")
 
         for v in bgColor.values():
@@ -20,5 +22,5 @@ class FormattedCell(Cell):
             if not 0 <= v <= 1:
                 raise ValueError("bgColor value must be between 0 and 1")
 
-        self.bgColor = bgColor
+        self.bgColor = copy.deepcopy(bgColor)
         self.bold = bold
