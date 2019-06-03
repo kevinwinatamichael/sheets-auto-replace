@@ -11,6 +11,7 @@ class Client:
         self._sheet_id = sheet_id
         self._sheet_name = sheet_name
         self._service = Creds.get_service()
+        self._grid_id = self._get_grid_id()
 
     def _get_grid_id(self):
         request = self._service.spreadsheets().get(spreadsheetId=self._sheet_id)

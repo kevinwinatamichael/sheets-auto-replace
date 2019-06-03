@@ -76,12 +76,10 @@ class ClientTestCases(unittest.TestCase):
         self.util.clear_spreadsheet()
 
     def test_constructor(self):
-        sheet_id = 'dummy_id'
-        sheet_name = 'dummy_name'
-        client = Client(sheet_id=sheet_id, sheet_name=sheet_name)
+        client = Client(sheet_id=Constants.unit_test_sheet_id, sheet_name=Constants.unit_test_sheet_name)
         expected_service = Creds.get_service()
-        self.assertEqual(sheet_id, client._sheet_id)
-        self.assertEqual(sheet_name, client._sheet_name)
+        self.assertEqual(Constants.unit_test_sheet_id, client._sheet_id)
+        self.assertEqual(Constants.unit_test_sheet_name, client._sheet_name)
         self.assertEqual(expected_service.__class__.__name__, client._service.__class__.__name__)
 
     def test_set_cell(self):
