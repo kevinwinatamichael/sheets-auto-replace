@@ -70,20 +70,20 @@ class ClientTestUtils:
 class ClientTestCases(unittest.TestCase):
 
     def setUp(self) -> None:
-        self.spreadsheet_id = Constants.unit_test_sheet_id
+        self.spreadsheet_id = Constants.unit_test_spreadsheet_id
         self.sheet_name = 'UNIT TEST'
         self.util = ClientTestUtils(self.spreadsheet_id)
         self.util.clear_spreadsheet()
 
     def test_constructor(self):
-        client = Client(sheet_id=Constants.unit_test_sheet_id, sheet_name=Constants.unit_test_sheet_name)
+        client = Client(spreadsheet_id=Constants.unit_test_spreadsheet_id, sheet_name=Constants.unit_test_sheet_name)
         expected_service = Creds.get_service()
-        self.assertEqual(Constants.unit_test_sheet_id, client._sheet_id)
+        self.assertEqual(Constants.unit_test_spreadsheet_id, client._spreadsheet_id)
         self.assertEqual(Constants.unit_test_sheet_name, client._sheet_name)
         self.assertEqual(expected_service.__class__.__name__, client._service.__class__.__name__)
 
     def test_set_cell(self):
-        client = Client(sheet_id=self.spreadsheet_id, sheet_name=self.sheet_name)
+        client = Client(spreadsheet_id=self.spreadsheet_id, sheet_name=self.sheet_name)
         sheet_range = 'A1:B2'
         exp_values = [[Cell("foo"), Cell("bar")], [Cell("baz")]]
 
@@ -95,8 +95,8 @@ class ClientTestCases(unittest.TestCase):
             self.assertCountEqual(exp_values, values)
 
     def test__get_grid_id(self):
-        client = Client(sheet_id=self.spreadsheet_id, sheet_name=self.sheet_name)
-        self.assertTrue(isinstance(client._get_grid_id(), int))
+        client = Client(spreadsheet_id=self.spreadsheet_id, sheet_name=self.sheet_name)
+        self.assertTrue(isinstance(client._get_sheet_id(), int))
 
 
 if __name__ == '__main__':

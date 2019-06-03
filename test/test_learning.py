@@ -357,7 +357,7 @@ class LearningTest(unittest.TestCase):
         pprint(response)
 
     def test_get_grid_data(self):
-        sheet = self.service.spreadsheets().get(spreadsheetId=Constants.unit_test_sheet_id).execute()
+        sheet = self.service.spreadsheets().get(spreadsheetId=Constants.unit_test_spreadsheet_id).execute()
         pprint(sheet['sheets'][0]['properties'])
 
 if __name__ == '__main__':
