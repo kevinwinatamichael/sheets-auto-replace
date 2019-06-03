@@ -1,8 +1,10 @@
+import time
 import unittest
 
 from cell import Cell
 from client import Client
 from creds import Creds
+from test.constants import Constants
 
 
 class ClientTestUtils:
@@ -11,7 +13,7 @@ class ClientTestUtils:
         self.spreadsheet_id = spreadsheet_id
 
     def clear_spreadsheet(self):
-        sheet_id_list = ClientTestUtils.get_sheet_id_list(self.spreadsheet_id)
+        sheet_id_list = self.get_sheet_id_list()
 
         self.create_new_sheet()
 
@@ -47,7 +49,7 @@ class ClientTestUtils:
                     {
                         "addSheet": {
                             "properties": {
-                                "title": "UNIT TEST",
+                                "title": "UNIT TEST {}".format(time.time()),
                                 "gridProperties": {
                                     "rowCount": 100,
                                     "columnCount": 20
@@ -68,7 +70,7 @@ class ClientTestUtils:
 class ClientTestCases(unittest.TestCase):
 
     def setUp(self) -> None:
-        self.spreadsheet_id = '1E5AbARR9-wF23aZbsnbnNaz59pGI7-vjmOiiAf7ck5w'
+        self.spreadsheet_id = Constants.unit_test_sheet_id
         self.sheet_name = 'UNIT TEST'
         self.util = ClientTestUtils(self.spreadsheet_id)
         self.util.clear_spreadsheet()
@@ -93,6 +95,10 @@ class ClientTestCases(unittest.TestCase):
 
         for row in values:
             self.assertCountEqual(exp_values, values)
+
+    def test__get_grid_id(self):
+        client = Client(sheet_id=self.spreadsheet_id, sheet_name=self.sheet_name)
+        self.assertTrue(isinstance(client._get_grid_id(), int))
 
 
 if __name__ == '__main__':
