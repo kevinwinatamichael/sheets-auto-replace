@@ -1,8 +1,11 @@
+import re
 import warnings
 
 from cell import Cell
 from creds import Creds
 from typing import List, Any, Union
+
+from formatted_cell import FormattedCell
 
 
 class Client:
@@ -27,6 +30,87 @@ class Client:
                 return sheet['properties']['sheetId']
         raise KeyError("sheet with sheet name {} not found".format(self._sheet_name))
 
-    def set(self, range_: str, values: List[List[Cell]]) -> None:
-        pass
+    @staticmethod
+    def _parse_range(range_):
+        if not re.match(r"[a-zA-Z]+[0-9]*:[a-zA-Z]+[0-9]*", range_):
+            raise ValueError("Invalid range")
+        start, stop = range_.split(':')
+        start_col_len = re.match(r"[a-zA-Z]+", start).end()
+        start_column = start[:start_col_len]
+        start_row = start[start_col_len:]
 
+        column_index = 0
+        for index, c in enumerate(start_column.upper()):
+            column_index += 26**(len(start_column)-index) * (ord(c) - ord('A') + 1)
+        column_index -= 1
+
+        row_index = int(start_row) if start_row else 0
+
+        return row_index, column_index
+
+    def set(self, range_: str, values: List[List[Cell]]) -> None:
+        row_index, column_index = Client._parse_range(range_)
+        requests = []
+        for row_offset, row in enumerate(values):
+            for column_offset, col in enumerate(row):
+                cell = values[row_offset][column_offset]
+                cell_json, update_fields = Client._extract_cell(cell)
+                requests.append(
+                    self._format_json_request(cell_json, update_fields, row_index, row_offset, column_index,
+                                              column_offset)
+                )
+        if requests:
+            self.service.spreadsheets().batchUpdate(spreadsheetId=review_spr_id, body=
+            {
+                'requests': requests
+            }).execute()
+
+
+    @staticmethod
+    def _extract_cell(cell: Cell) -> object:
+        if isinstance(cell.value, str):
+            cell_value_json = {
+                'stringValue': cell.value,
+            }
+            update_fields = 'effectiveValue.stringValue,userEnteredValue.stringValue'
+        elif isinstance(cell.value, int):
+            cell_value_json = {
+                'numberValue': cell.value,
+            }
+            update_fields = 'effectiveValue.numberValue,userEnteredValue.numberValue'
+        else:
+            raise TypeError("Not supported cell type")
+
+        cell_json = {
+            "effectiveValue": cell_value_json,
+            "userEnteredValue": cell_value_json,
+        }
+
+        if isinstance(cell, FormattedCell):
+            cell_format_json = {
+                "backgroundColor": cell.bgColor,
+                "textFormat": {"bold": cell.bold},
+            }
+            cell_json['effectiveFormat'] = cell_format_json
+            cell_json['userEnteredFormat'] = cell_format_json
+
+            update_fields += ',effectiveFormat.backgroundColor,userEnteredFormat.backgroundColor,\
+                            effectiveFormat.textFormat.bold,userEnteredFormat.textFormat.bold'
+        return cell_json, update_fields
+
+    def _format_json_request(self, cell_json, update_fields, row_index, row_offset, column_index, column_offset):
+        return {
+            'updateCells': {
+                'rows': {
+                    'values': [
+                        cell_json,
+                    ]
+                },
+                'fields': update_fields,
+                'start': {
+                    "sheetId": self._sheet_id,
+                    "rowIndex": row_index + row_offset,
+                    "columnIndex": column_index + column_offset,
+                }
+            }
+        }
