@@ -149,20 +149,54 @@ class LearningTest(unittest.TestCase):
                                            .get('updatedCells')))
 
     def test_search_term(self):
-        review_spr_id = '1AjgnY_4uuwVyLYNHwxnr2UPHd93onAMnOD5veWFER20'
-        keyword_spr_id = '1LXNphdC92rbOJhA720GGb1BNmAhX20fWIHr-e_fO--Q'
-        base_index = 4852
-        review_range = "'Benchmarking_new'!A{}:A5101".format(base_index)
+        # BASE_INDEX is EXLUSIVE but TOP_INDEX is INCLUSIVE
+        countries = {
+            'PH': {
+                'review_sheet_name': 'Benchmarking_new',
+                'base_index': 5101,
+                'top_index': 5351,
+                'review_spr_id': '1AjgnY_4uuwVyLYNHwxnr2UPHd93onAMnOD5veWFER20',
+                'keyword_spr_id': '1VmPRrYzsE6RrzB-kj7Dbq-q5jst5USo3jO6xgcvSvaQ',
+                'sheetId': 1357095039,
+            },
+            'MY': {
+                'review_sheet_name': 'Benchmarking_new',
+                'base_index': 5051,
+                'top_index': 5201,
+                'review_spr_id': '15CvH8PBJUktYF46kQypDAd-xvkBP7X37BZiP3uTdX-Y',
+                'keyword_spr_id': '1-TIBLC20YGechJNYJOmFBgmcqN1_6LcPlZ_W_dIYQn4',
+                'sheetId': 648477030,
+            },
+            'SG': {
+                'review_sheet_name': 'Benchmarking_new',
+                'base_index': 4943,
+                'top_index': 5193,
+                'review_spr_id': '1sS9b6GwZjB0oQ9pvqDOoF-7Qpk3A2c9lyTGNR8hYvKI',
+                'keyword_spr_id': '1gvE1lmKeGDtlTT54H_tuUiklmKDiiHCSrz8LPF-OvyY',
+                'sheetId': 186606542,
+            },
+            'TW': {
+                'review_sheet_name': 'Benchmarking_new',
+                'base_index': 5801,
+                'top_index': 6101,
+                'review_spr_id': '1bD6BeGpAQxZk99Ai6vMlA0g1ljAZxtYyQ1bDFt7HGLY',
+                'keyword_spr_id': '1DJhfw6I4ZD6hFaWA3CynXRd8dIiO8VnwJa74Ji5F8BY',
+                'sheetId': 222824563,
+            },
+        }
+        country = 'MY'
+        review_sheet_name = countries[country]['review_sheet_name']
+        base_index = countries[country]['base_index']
+        top_index = countries[country]['top_index']
+        review_spr_id = countries[country]['review_spr_id']
+        keyword_spr_id = countries[country]['keyword_spr_id']
+        sheetId = countries[country]['sheetId']
+
+        review_range = "'{}'!A{}:A{}".format(review_sheet_name, base_index, top_index)
         keyword_range = "to-benchmark!A1:B1000"
 
-        value_render_option = 'FORMATTED_VALUE'
-        date_time_render_option = 'SERIAL_NUMBER'
         request = self.service.spreadsheets().get(spreadsheetId=review_spr_id, ranges=[review_range], includeGridData=True)
         response = request.execute()
-        # import json
-        # with open('data.txt', 'w') as outfile:
-        #     json.dump(response, outfile)
-        # return True
         rows = response['sheets'][0]['data'][0]['rowData'][1:]
         review_rows = []
         for row in rows:
@@ -180,6 +214,8 @@ class LearningTest(unittest.TestCase):
                         value_to_append = value['effectiveValue']['stringValue']
                     elif 'numberValue' in value['effectiveValue']:
                         value_to_append = value['effectiveValue']['numberValue']
+                    else:
+                        raise KeyError('Value not found in effectiveValue.')
                     my_row.append({
                         'value': value_to_append,
                         'colorSum': color['red']+color['blue']+color['green']
@@ -198,8 +234,6 @@ class LearningTest(unittest.TestCase):
 
         # get the index
         request = self.service.spreadsheets().values().get(spreadsheetId=keyword_spr_id, range=keyword_range)
-                                                           # valueRenderOption=value_render_option,
-                                                           # dateTimeRenderOption=date_time_render_option)
         response = request.execute()
         keyword_values = response['values'][1:]
         index = None
@@ -223,7 +257,7 @@ class LearningTest(unittest.TestCase):
         data = []
         for i in to_replace_index:
             data.append({
-                "range": "'Benchmarking_new'!A{}:A{}".format(base_index+i+1, base_index+i+1),
+                "range": "'{}'!A{}:A{}".format(review_sheet_name, base_index+i+1, base_index+i+1),
                 "values": [
                     [new_keywords.pop()]
                 ]
@@ -267,7 +301,7 @@ class LearningTest(unittest.TestCase):
                         'fields': 'effectiveFormat.backgroundColor,userEnteredFormat.backgroundColor,\
                                   effectiveFormat.textFormat.bold,userEnteredFormat.textFormat.bold',
                         'start': {
-                            "sheetId": 1357095039,
+                            "sheetId": sheetId,
                             "rowIndex": (base_index + i),
                             "columnIndex": 0,
                         }
