@@ -94,7 +94,7 @@ class ClientTestCases(unittest.TestCase):
         for row in values:
             self.assertCountEqual(exp_values, values)
 
-    def test__get_grid_id(self):
+    def test__get_sheet_id(self):
         client = Client(spreadsheet_id=self.spreadsheet_id, sheet_name=self.sheet_name)
         self.assertTrue(isinstance(client._get_sheet_id(), int))
 
