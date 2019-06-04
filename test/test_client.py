@@ -108,5 +108,14 @@ class ClientTestCases(unittest.TestCase):
                 self.assertTrue(field in cell_json)
                 self.assertEqual(exp_value, cell_json[field][value_field_name])
 
+            expected_update_fields = "effectiveValue.{},userEnteredValue.{}".format(
+                value_field_name,
+                value_field_name
+            )
+            self.assertEqual(expected_update_fields, update_fields)
+
+    def test__extract_cell_formatted(self):
+        pass
+
 if __name__ == '__main__':
     unittest.main()
