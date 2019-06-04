@@ -4,6 +4,7 @@ import unittest
 from cell import Cell
 from client import Client
 from creds import Creds
+from formatted_cell import FormattedCell
 from test.constants import Constants
 
 
@@ -115,7 +116,22 @@ class ClientTestCases(unittest.TestCase):
             self.assertEqual(expected_update_fields, update_fields)
 
     def test__extract_cell_formatted(self):
-        pass
+        value = "a string"
+        color = {
+            "red": 0.1234,
+            "blue": 0.5678,
+            "green": 0.0
+        }
+        is_bold = True
+        formatted_Cell = FormattedCell("a string", color, is_bold)
+        expected_fields = ["userEnteredValue", "effectiveValue", "userEnteredFormat", "effectiveFormat"]
+        cell_json, updated_fields = Client._extract_cell(formatted_Cell)
+        for field in expected_fields:
+            print(field)
+            self.assertTrue(field in cell_json)
+        self.assertEqual(value, cell_json['effectiveValue']['stringValue'])
+        self.assertEqual(color, cell_json['effectiveFormat']['backgroundColor'])
+        self.assertEqual(is_bold, cell_json['userEnteredFormat']['textFormat']['bold'])
 
 if __name__ == '__main__':
     unittest.main()
