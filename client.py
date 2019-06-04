@@ -3,7 +3,7 @@ import warnings
 
 from cell import Cell
 from creds import Creds
-from typing import List, Any, Union
+from typing import List
 
 from formatted_cell import FormattedCell
 
@@ -60,11 +60,10 @@ class Client:
                                               column_offset)
                 )
         if requests:
-            self.service.spreadsheets().batchUpdate(spreadsheetId=review_spr_id, body=
+            self._service.spreadsheets().batchUpdate(spreadsheetId=self._spreadsheet_id, body=
             {
                 'requests': requests
             }).execute()
-
 
     @staticmethod
     def _extract_cell(cell: Cell) -> object:

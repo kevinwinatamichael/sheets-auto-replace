@@ -98,6 +98,15 @@ class ClientTestCases(unittest.TestCase):
         client = Client(spreadsheet_id=self.spreadsheet_id, sheet_name=self.sheet_name)
         self.assertTrue(isinstance(client._get_sheet_id(), int))
 
+    def test__extract_cell_plain(self):
+        value_field_pairs = [["a string", "stringValue"], [0, "numberValue"]]
+        for exp_value, value_field_name in value_field_pairs:
+            plain_cell = Cell(exp_value)
+            cell_json, update_fields = Client._extract_cell(plain_cell)
+            expected_fields = ["userEnteredValue", "effectiveValue"]
+            for field in expected_fields:
+                self.assertTrue(field in cell_json)
+                self.assertEqual(exp_value, cell_json[field][value_field_name])
 
 if __name__ == '__main__':
     unittest.main()
