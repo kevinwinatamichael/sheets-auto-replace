@@ -2,6 +2,8 @@ import os
 import time
 import unittest
 
+from googleapiclient.discovery import Resource
+
 import settings
 from creds import Creds
 
@@ -18,13 +20,14 @@ class CredsTestCases(unittest.TestCase):
         end_time = time.time()
 
         self.assertTrue((end_time-start_time) >= 1)
-        self.assertEqual('Resource', service.__class__.__name__)
+        self.assertTrue(isinstance(service, Resource))
 
         start_time = time.time()
         service = Creds.get_service()
         end_time = time.time()
         self.assertFalse((end_time-start_time) >= 1)
-        self.assertEqual('Resource', service.__class__.__name__)
+        self.assertTrue(isinstance(service, Resource))
+
 
 
 if __name__ == '__main__':
