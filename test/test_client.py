@@ -86,7 +86,7 @@ class ClientTestCases(unittest.TestCase):
     def test_set_cell(self):
         client = Client(spreadsheet_id=self.spreadsheet_id, sheet_name=self.sheet_name)
         sheet_range = 'A1:B2'
-        exp_values = [["foo", "bar"], ["baz"]]  # TODO: directly make the Cell(...) here for simpler test
+        exp_values = [["foo", "bar"], ["baz"]]
         cells = []
         for row in exp_values:
             cell_row = []
@@ -114,7 +114,7 @@ class ClientTestCases(unittest.TestCase):
             ]
         ]
         client.set(sheet_range, exp_values)
-        values = self.util.read_cell('A1:B2')  # TODO change to get method when it's available
+        values = self.util.read_cell('A1:B2')
         for i, row in enumerate(values):
             for j, val in enumerate(row):
                 self.assertEqual(str(exp_values[i][j].value), val)

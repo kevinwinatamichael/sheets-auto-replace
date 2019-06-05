@@ -13,8 +13,10 @@ class FormattedCell(Cell):
         if not isinstance(bold, bool):
             raise TypeError("bold must be boolean")
 
-        if not {"red", "green", "blue"}.issubset(set(bgColor.keys())):
-            raise KeyError("bgColor must contain red, green, and blue keys")
+        colors = ["red", "green", "blue"]
+        for color in colors:
+            if color not in bgColor.keys():
+                bgColor[color] = 1.0
 
         for v in bgColor.values():
             if not isinstance(v, (int, float)):

@@ -113,3 +113,27 @@ class Client:
                 }
             }
         }
+
+    def get(self, range_: str) -> List[List[Cell]]:
+        request = self._service.spreadsheets().get(spreadsheetId=self._spreadsheet_id,
+                                                   ranges=[range_],
+                                                   includeGridData=True)
+        response = request.execute()
+        rows = response['sheets'][0]['data'][0]['rowData']
+        cell_data = []
+        for row in rows:
+            cell_row = []
+            for cell in row['values']:
+                if 'stringValue' in cell['effectiveValue']:
+                    cell_value = cell['effectiveValue']['stringValue']
+                elif 'numberValue' in cell['effectiveValue']:
+                    cell_value = cell['effectiveValue']['numberValue']
+                else:
+                    raise KeyError("stringValue and numberValue not found in cell['effectiveValue']")
+
+                cell_row.append(FormattedCell(
+                    cell_value,
+                    cell['effectiveFormat']['backgroundColor'],
+                    cell['effectiveFormat']['textFormat']['bold']
+                ))
+        return cell_data
