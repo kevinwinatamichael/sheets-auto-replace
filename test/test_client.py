@@ -98,7 +98,8 @@ class ClientTestCases(unittest.TestCase):
 
         values = self.util.read_cell('A1:B2')
         for i, row in enumerate(values):
-            self.assertCountEqual(exp_values[i], row)
+            for j, val in enumerate(row):
+                self.assertEqual(str(exp_values[i][j]), val)
 
     def test_set_cell_formatted(self):
         client = Client(spreadsheet_id=self.spreadsheet_id, sheet_name=self.sheet_name)
