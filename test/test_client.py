@@ -79,8 +79,8 @@ class ClientTestCases(unittest.TestCase):
     def test_constructor(self):
         client = Client(spreadsheet_id=Constants.unit_test_spreadsheet_id, sheet_name=Constants.unit_test_sheet_name)
         expected_service = Creds.get_service()
-        self.assertEqual(Constants.unit_test_spreadsheet_id, client._spreadsheet_id)
-        self.assertEqual(Constants.unit_test_sheet_name, client._sheet_name)
+        self.assertEqual(Constants.unit_test_spreadsheet_id, client.spreadsheet_id)
+        self.assertEqual(Constants.unit_test_sheet_name, client.sheet_name)
         self.assertTrue(isinstance(expected_service, type(client._service)))
 
     def test_set_cell(self):

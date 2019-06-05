@@ -11,24 +11,24 @@ from formatted_cell import FormattedCell
 class Client:
 
     def __init__(self, spreadsheet_id=None, sheet_name=None):
-        self._spreadsheet_id = spreadsheet_id
-        self._sheet_name = sheet_name
+        self.spreadsheet_id = spreadsheet_id
+        self.sheet_name = sheet_name
         self._service = Creds.get_service()
         self._sheet_id = self._get_sheet_id()
 
     def _get_sheet_id(self):
-        request = self._service.spreadsheets().get(spreadsheetId=self._spreadsheet_id)
+        request = self._service.spreadsheets().get(spreadsheetId=self.spreadsheet_id)
         spreadsheet = request.execute()
         for sheet in spreadsheet['sheets']:
             name = sheet['properties']['title']
-            if name == self._sheet_name:
+            if name == self.sheet_name:
                 return sheet['properties']['sheetId']
-            elif name.startswith(self._sheet_name):
-                warnings.warn("prefix is used instead of exact match: {} of {}".format(name, self._sheet_name),
+            elif name.startswith(self.sheet_name):
+                warnings.warn("prefix is used instead of exact match: {} of {}".format(name, self.sheet_name),
                               UserWarning,
                               stacklevel=1)
                 return sheet['properties']['sheetId']
-        raise KeyError("sheet with sheet name {} not found".format(self._sheet_name))
+        raise KeyError("sheet with sheet name {} not found".format(self.sheet_name))
 
     @staticmethod
     def _parse_range(range_):
@@ -60,7 +60,7 @@ class Client:
                                               column_offset)
                 )
         if requests:
-            self._service.spreadsheets().batchUpdate(spreadsheetId=self._spreadsheet_id, body=
+            self._service.spreadsheets().batchUpdate(spreadsheetId=self.spreadsheet_id, body=
             {
                 'requests': requests
             }).execute()
@@ -115,7 +115,7 @@ class Client:
         }
 
     def get(self, range_: str) -> List[List[Cell]]:
-        request = self._service.spreadsheets().get(spreadsheetId=self._spreadsheet_id,
+        request = self._service.spreadsheets().get(spreadsheetId=self.spreadsheet_id,
                                                    ranges=[range_],
                                                    includeGridData=True)
         response = request.execute()
