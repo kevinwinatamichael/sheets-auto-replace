@@ -100,6 +100,24 @@ class ClientTestCases(unittest.TestCase):
         for i, row in enumerate(values):
             self.assertCountEqual(exp_values[i], row)
 
+    def test_set_cell_formatted(self):
+        client = Client(spreadsheet_id=self.spreadsheet_id, sheet_name=self.sheet_name)
+        sheet_range = 'A1:B2'
+        exp_values = [
+            [
+                FormattedCell("foo", {"red": 1.0, "blue": 0.3, "green": 0.4}, True),
+                FormattedCell(123, {"red": 0, "blue": 1.0, "green": 0}, False)
+            ],
+            [
+                FormattedCell("baz", {"red": 0.5, "blue": 0.5, "green": 0.5}, True)
+            ]
+        ]
+        client.set(sheet_range, exp_values)
+        values = self.util.read_cell('A1:B2')  # TODO change to get method when it's available
+        for i, row in enumerate(values):
+            for j, val in enumerate(row):
+                self.assertEqual(str(exp_values[i][j].value), val)
+
     def test__get_sheet_id(self):
         client = Client(spreadsheet_id=self.spreadsheet_id, sheet_name=self.sheet_name)
         self.assertTrue(isinstance(client._get_sheet_id(), int))
