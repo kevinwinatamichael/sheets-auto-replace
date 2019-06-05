@@ -86,7 +86,7 @@ class ClientTestCases(unittest.TestCase):
     def test_set_cell(self):
         client = Client(spreadsheet_id=self.spreadsheet_id, sheet_name=self.sheet_name)
         sheet_range = 'A1:B2'
-        exp_values = [["foo", "bar"], ["baz"]]
+        exp_values = [["foo", "bar"], ["baz"]]  # TODO: directly make the Cell(...) here for simpler test
         cells = []
         for row in exp_values:
             cell_row = []
@@ -161,6 +161,19 @@ class ClientTestCases(unittest.TestCase):
                                  "effectiveFormat.textFormat.bold,userEnteredFormat.textFormat.bold"
         self.assertEqual(expected_update_fields, update_fields)
 
+    def test_get_celL(self):
+        client = Client(spreadsheet_id=self.spreadsheet_id, sheet_name=self.sheet_name)
+        sheet_range = 'A1:B2'
+        exp_values = [[Cell("foo"),
+                       FormattedCell("foo", {"red": 1.0, "blue": 0.3, "green": 0.4}, True)],
+                      [FormattedCell(123, {"red": 0, "blue": 1.0, "green": 0}, False)]]
+
+        client.set(sheet_range, exp_values)
+
+        values = client.get('A1:B2')
+        for i, row in enumerate(values):
+            for j, val in enumerate(row):
+                self.assertEqual(str(exp_values[i][j]), val)
 
 if __name__ == '__main__':
     unittest.main()
