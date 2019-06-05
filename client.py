@@ -41,10 +41,10 @@ class Client:
 
         column_index = 0
         for index, c in enumerate(start_column.upper()):
-            column_index += 26**(len(start_column)-index) * (ord(c) - ord('A') + 1)
+            column_index += 26**(len(start_column)-index-1) * (ord(c) - ord('A') + 1)
         column_index -= 1
 
-        row_index = int(start_row) if start_row else 0
+        row_index = int(start_row)-1 if start_row else 0
 
         return row_index, column_index
 

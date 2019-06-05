@@ -86,12 +86,17 @@ class ClientTestCases(unittest.TestCase):
     def test_set_cell(self):
         client = Client(spreadsheet_id=self.spreadsheet_id, sheet_name=self.sheet_name)
         sheet_range = 'A1:B2'
-        exp_values = [[Cell("foo"), Cell("bar")], [Cell("baz")]]
+        exp_values = [["foo", "bar"], ["baz"]]
+        cells = []
+        for row in exp_values:
+            cell_row = []
+            for val in row:
+                cell_row.append(Cell(val))
+            cells.append(cell_row)
 
-        client.set(sheet_range, exp_values)
+        client.set(sheet_range, cells)
 
         values = self.util.read_cell('A1:B2')
-
         for i, row in enumerate(values):
             self.assertCountEqual(exp_values[i], row)
 
