@@ -125,13 +125,18 @@ class ClientTestCases(unittest.TestCase):
         is_bold = True
         formatted_Cell = FormattedCell("a string", color, is_bold)
         expected_fields = ["userEnteredValue", "effectiveValue", "userEnteredFormat", "effectiveFormat"]
-        cell_json, updated_fields = Client._extract_cell(formatted_Cell)
+        cell_json, update_fields = Client._extract_cell(formatted_Cell)
         for field in expected_fields:
-            print(field)
             self.assertTrue(field in cell_json)
         self.assertEqual(value, cell_json['effectiveValue']['stringValue'])
         self.assertEqual(color, cell_json['effectiveFormat']['backgroundColor'])
         self.assertEqual(is_bold, cell_json['userEnteredFormat']['textFormat']['bold'])
+
+        expected_update_fields = "effectiveValue.stringValue,userEnteredValue.stringValue," +\
+                                 "effectiveFormat.backgroundColor,userEnteredFormat.backgroundColor," +\
+                                 "effectiveFormat.textFormat.bold,userEnteredFormat.textFormat.bold"
+        self.assertEqual(expected_update_fields, update_fields)
+
 
 if __name__ == '__main__':
     unittest.main()

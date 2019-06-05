@@ -93,8 +93,8 @@ class Client:
             cell_json['effectiveFormat'] = cell_format_json
             cell_json['userEnteredFormat'] = cell_format_json
 
-            update_fields += ',effectiveFormat.backgroundColor,userEnteredFormat.backgroundColor,\
-                            effectiveFormat.textFormat.bold,userEnteredFormat.textFormat.bold'
+            update_fields += ',effectiveFormat.backgroundColor,userEnteredFormat.backgroundColor,' +\
+                             'effectiveFormat.textFormat.bold,userEnteredFormat.textFormat.bold'
         return cell_json, update_fields
 
     def _format_json_request(self, cell_json, update_fields, row_index, row_offset, column_index, column_offset):
