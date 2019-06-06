@@ -115,8 +115,9 @@ class Client:
         }
 
     def get(self, range_: str) -> List[List[Cell]]:
+        range_with_sheet_name = '{}!{}'.format(self.sheet_name, range_)
         request = self._service.spreadsheets().get(spreadsheetId=self.spreadsheet_id,
-                                                   ranges=[range_],
+                                                   ranges=[range_with_sheet_name],
                                                    includeGridData=True)
         response = request.execute()
         rows = response['sheets'][0]['data'][0]['rowData']
