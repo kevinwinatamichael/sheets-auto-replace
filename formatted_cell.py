@@ -16,7 +16,7 @@ class FormattedCell(Cell):
         colors = ["red", "green", "blue"]
         for color in colors:
             if color not in bgColor.keys():
-                bgColor[color] = 1.0
+                bgColor[color] = 0
 
         for v in bgColor.values():
             if not isinstance(v, (int, float)):
@@ -26,3 +26,6 @@ class FormattedCell(Cell):
 
         self.bgColor = copy.deepcopy(bgColor)
         self.bold = bold
+
+    def __repr__(self):
+        return "<< FormattedCell: {} [{}], {}, bold: {} >>".format(self.value, type(self.value), self.bgColor, self.bold)
