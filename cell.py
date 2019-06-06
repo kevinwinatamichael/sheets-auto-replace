@@ -7,4 +7,7 @@ class Cell:
         self.value = value
 
     def __repr__(self):
-        return "<Cell: {}>".format(self.value)
+        return "<Cell: {} [{}]>".format(self.value, type(self.value))
+
+    def __eq__(self, other):
+        return self.value == other.value

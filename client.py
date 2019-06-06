@@ -136,4 +136,5 @@ class Client:
                     cell['effectiveFormat']['backgroundColor'],
                     cell['effectiveFormat']['textFormat']['bold']
                 ))
+            cell_data.append(cell_row)
         return cell_data

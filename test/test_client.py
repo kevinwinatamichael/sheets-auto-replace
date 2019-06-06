@@ -171,9 +171,9 @@ class ClientTestCases(unittest.TestCase):
         client.set(sheet_range, exp_values)
 
         values = client.get('A1:B2')
-        for i, row in enumerate(values):
+        for i, row in enumerate(exp_values):
             for j, val in enumerate(row):
-                self.assertEqual(str(exp_values[i][j]), val)
+                self.assertEqual(val, values[i][j])
 
 if __name__ == '__main__':
     unittest.main()
