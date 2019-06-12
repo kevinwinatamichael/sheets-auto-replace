@@ -5,7 +5,7 @@ from typing import List, Tuple
 from cell import Cell
 from client import Client
 from formatted_cell import FormattedCell
-from parser import A1Parser
+from a1parser import A1Parser
 
 
 class Manager:
