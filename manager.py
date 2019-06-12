@@ -19,10 +19,11 @@ class Manager:
 
         Manager._validate_range_width(review_range, 1, "Review Range Width must be one")
         Manager._validate_range_width(keyword_range, 2, "Keyword Range width must be two")
-
+        interval = 5
+        print("Start on", time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()), "with interval", interval, "s.")
         while True:
             Manager.perform(review_client, keyword_client, review_range, keyword_range)
-            time.sleep(5)
+            time.sleep(interval)
 
     @staticmethod
     def _validate_range_width(range_, width, error_msg="Invalid Range Width"):
@@ -42,7 +43,7 @@ class Manager:
         keyword_terms, keyword_indices = Manager.get_keyword_replacement(len(indices_to_replace), current_keyword_sheet)
 
         if len(indices_to_replace) == 0:
-            print("Found nothing on", time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()))
+            print(".")
             return
 
         review_start_cell = A1Parser.split_range(review_range)[0]
