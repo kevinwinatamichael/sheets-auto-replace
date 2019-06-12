@@ -1,5 +1,8 @@
+import re
+import time
 from typing import List, Tuple
 
+from cell import Cell
 from client import Client
 from formatted_cell import FormattedCell
 from parser import A1Parser
@@ -19,7 +22,7 @@ class Manager:
 
         while True:
             Manager.perform(review_client, keyword_client, review_range, keyword_range)
-            break
+            time.sleep(5)
 
     @staticmethod
     def _validate_range_width(range_, width, error_msg="Invalid Range Width"):
@@ -38,8 +41,32 @@ class Manager:
         indices_to_replace = Manager.get_indices_to_replace(current_review_sheet)
         keyword_terms, keyword_indices = Manager.get_keyword_replacement(len(indices_to_replace), current_keyword_sheet)
 
-        print(indices_to_replace)
-        print(keyword_terms, keyword_indices)
+        if len(indices_to_replace) == 0:
+            print("Found nothing on", time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()))
+            return
+
+        review_start_cell = A1Parser.split_range(review_range)[0]
+        review_col = re.sub('[0-9]', '', review_start_cell)
+        review_base_row = int(re.sub('[a-zA-Z]', '', review_start_cell))
+        for i in range(len(indices_to_replace)):
+            review_client.set('{}{}:{}{}'.format(
+                review_col,
+                indices_to_replace[i]+review_base_row,
+                review_col,
+                indices_to_replace[i]+review_base_row
+            ), [[FormattedCell(keyword_terms[i], {"red": 1, "blue": 1, "green": 1}, True)]])
+
+        keyword_check_col = re.sub('[0-9]', '', A1Parser.split_range(keyword_range)[1])
+        keyword_base_row = int(re.sub('[a-zA-Z]', '', A1Parser.split_range(keyword_range)[0]))
+        keyword_client.set('{}{}:{}{}'.format(
+                keyword_check_col,
+                keyword_indices[0]+keyword_base_row,
+                keyword_check_col,
+                keyword_indices[-1]+keyword_base_row
+            ),
+            [[Cell(1)]]*len(keyword_indices)
+        )
+        print(time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()), ': Succesfully replace:', keyword_terms)
 
     @staticmethod
     def get_indices_to_replace(current_review_sheet: List[List[FormattedCell]]) -> List[int]:
