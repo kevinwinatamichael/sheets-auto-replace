@@ -6,6 +6,7 @@ from creds import Creds
 from typing import List
 
 from formatted_cell import FormattedCell
+from parser import A1Parser
 
 
 class Client:
@@ -30,26 +31,9 @@ class Client:
                 return sheet['properties']['sheetId']
         raise KeyError("sheet with sheet name {} not found".format(self.sheet_name))
 
-    @staticmethod
-    def _parse_range(range_):
-        if not re.match(r"[a-zA-Z]+[0-9]*:[a-zA-Z]+[0-9]*", range_):
-            raise ValueError("Invalid range")
-        start, stop = range_.split(':')
-        start_col_len = re.match(r"[a-zA-Z]+", start).end()
-        start_column = start[:start_col_len]
-        start_row = start[start_col_len:]
-
-        column_index = 0
-        for index, c in enumerate(start_column.upper()):
-            column_index += 26**(len(start_column)-index-1) * (ord(c) - ord('A') + 1)
-        column_index -= 1
-
-        row_index = int(start_row)-1 if start_row else 0
-
-        return row_index, column_index
-
     def set(self, range_: str, values: List[List[Cell]]) -> None:
-        row_index, column_index = Client._parse_range(range_)
+        start_cell = A1Parser.split_range(range_)[0]
+        row_index, column_index = A1Parser.parse_cell(start_cell)
         requests = []
         for row_offset, row in enumerate(values):
             for column_offset, col in enumerate(row):
@@ -115,7 +99,7 @@ class Client:
         }
 
     def get(self, range_: str) -> List[List[Cell]]:
-        range_with_sheet_name = '{}!{}'.format(self.sheet_name, range_)
+        range_with_sheet_name = "'{}'!{}".format(self.sheet_name, range_)
         request = self._service.spreadsheets().get(spreadsheetId=self.spreadsheet_id,
                                                    ranges=[range_with_sheet_name],
                                                    includeGridData=True)
