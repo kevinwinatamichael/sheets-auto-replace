@@ -13,7 +13,8 @@ class ManagerTestCases(unittest.TestCase):
             'keywordSheetId': Constants.manager_test_keyword_spreadsheet_id,
             'keywordSheetName': Constants.manager_test_keyword_sheet_name,
             'reviewRange': Constants.manager_test_review_range,
-            'keywordRange': Constants.manager_test_keyword_range
+            'keywordRange': Constants.manager_test_keyword_range,
+            'interval': 2,
         }
         Manager.main(args)
 
