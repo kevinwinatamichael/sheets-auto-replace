@@ -11,6 +11,22 @@ from parser import A1Parser
 class Manager:
 
     @staticmethod
+    def start():
+        args = {
+            'reviewSheetId': input("review spreadsheet id:"),
+            'reviewSheetName': input("review sheet name:"),
+            'reviewRange': input("review sheet range:"),
+
+            'keywordSheetId': input("keywords spreadsheet id:"),
+            'keywordSheetName': input("keywords sheet name:"),
+            'keywordRange': input("keywords sheet range:"),
+            'interval': input("interval length (in seconds):")
+        }
+        print("Thank you!")
+        Manager.main(args)
+
+
+    @staticmethod
     def main(args):
         review_client = Client(args['reviewSheetId'], args['reviewSheetName'])
         keyword_client = Client(args['keywordSheetId'], args['keywordSheetName'])
@@ -19,7 +35,7 @@ class Manager:
 
         Manager._validate_range_width(review_range, 1, "Review Range Width must be one")
         Manager._validate_range_width(keyword_range, 2, "Keyword Range width must be two")
-        interval = 5
+        interval = args['interval']
         print("Start on", time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()), "with interval", interval, "s.")
         while True:
             Manager.perform(review_client, keyword_client, review_range, keyword_range)
