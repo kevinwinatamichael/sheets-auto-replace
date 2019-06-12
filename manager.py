@@ -2,6 +2,7 @@ from typing import List, Tuple
 
 from client import Client
 from formatted_cell import FormattedCell
+from parser import A1Parser
 
 
 class Manager:
@@ -12,11 +13,22 @@ class Manager:
         keyword_client = Client(args['keywordSheetId'], args['keywordSheetName'])
         review_range = args['reviewRange']
         keyword_range = args['keywordRange']
-        # TODO check review_range width is 1 column
-        # TODO check keyword_range width is 2 columns
+
+        Manager._validate_range_width(review_range, 1, "Review Range Width must be one")
+        Manager._validate_range_width(keyword_range, 2, "Keyword Range width must be two")
+
         while True:
             Manager.perform(review_client, keyword_client, review_range, keyword_range)
             break
+
+    @staticmethod
+    def _validate_range_width(range_, width, error_msg="Invalid Range Width"):
+        A1Parser.validate_range(range_)
+        start, stop = A1Parser.split_range(range_)
+        __, start_col = A1Parser.parse_cell(start)
+        __, stop_col = A1Parser.parse_cell(stop)
+        if start_col+(width-1) != stop_col:
+            raise ValueError(error_msg)
 
     @staticmethod
     def perform(review_client, keyword_client, review_range, keyword_range):
