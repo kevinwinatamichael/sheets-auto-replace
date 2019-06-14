@@ -1,6 +1,7 @@
 import unittest
 
 from cell import Cell
+from formatted_cell import FormattedCell
 from manager import Manager
 from test.constants import Constants
 
@@ -20,9 +21,41 @@ class ManagerTestCases(unittest.TestCase):
         Manager.main(args)
 
 
+class Test_get_indices_to_replace(unittest.TestCase):
+    """
+        Flowchart:
+        for: (1)
+            if: (2)
+                code (3)
+        return
+
+        Basis paths:
+        1. 1,2,3
+        2. 1,2
+        3. 1
+    """
+    PLAIN_CELL = FormattedCell("val", {'red':1, 'blue':1, 'green':1}, False)
+    COLOR_CELL = FormattedCell("val", {'red':0.5, 'blue':1, 'green':1}, False)
+
+    def test_basis_1(self):
+        data = [
+            [self.COLOR_CELL]
+        ]
+        self.assertCountEqual([0], Manager.get_indices_to_replace(data))
+
+    def test_basis_2(self):
+        data = [
+            [self.PLAIN_CELL]
+        ]
+        self.assertCountEqual([], Manager.get_indices_to_replace(data))
+
+    def test_basis_3(self):
+        data = []
+        self.assertCountEqual([], Manager.get_indices_to_replace(data))
+
 class Test_get_keyword_replacement(unittest.TestCase):
     """
-        Pseudocode:
+        Flowchart:
         for: (1)
             if: continue (2)
             if: commands (3)
