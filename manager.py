@@ -25,7 +25,6 @@ class Manager:
         print("Thank you!")
         Manager.main(args)
 
-
     @staticmethod
     def main(args):
         review_client = Client(args['reviewSheetId'], args['reviewSheetName'])

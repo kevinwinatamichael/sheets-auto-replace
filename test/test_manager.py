@@ -130,5 +130,26 @@ class Test_get_keyword_replacement(unittest.TestCase):
         self.assertCountEqual([], keyword_terms)
         self.assertCountEqual([], keyword_indices)
 
+
+class Test__validate_range_width(unittest.TestCase):
+
+    def test_basis_1(self):
+        Manager._validate_range_width('A1:D1', 4)
+
+    def test_basis_2(self):
+        try:
+            Manager._validate_range_width('A1:C1', 4)
+        except ValueError:
+            pass
+        else:
+            self.fail("Expected error")
+        try:
+            Manager._validate_range_width('A1:E1', 4)
+        except ValueError:
+            pass
+        else:
+            self.fail("Expected error")
+
+
 if __name__ == '__main__':
     unittest.main()
