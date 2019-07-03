@@ -20,10 +20,22 @@ class Manager:
             'keywordSheetId': input("keywords spreadsheet id:"),
             'keywordSheetName': input("keywords sheet name:"),
             'keywordRange': input("keywords sheet range:"),
-            'interval': input("interval length (in seconds):")
         }
         print("Thank you!")
-        Manager.main(args)
+        print("Start on", Manager.local_time(), "with interval 600s.")
+        while True:
+            Manager.main(args)
+            print(".")
+            time.sleep(600)
+
+    @staticmethod
+    def main_many(countries):
+        print("Start on", Manager.local_time(), "with interval 600s.")
+        while True:
+            for country_args in countries:
+                Manager.main(country_args)
+            print(".")
+            time.sleep(600)
 
     @staticmethod
     def main(args):
@@ -34,11 +46,7 @@ class Manager:
 
         Manager._validate_range_width(review_range, 1, "Review Range Width must be one")
         Manager._validate_range_width(keyword_range, 2, "Keyword Range width must be two")
-        interval = args['interval']
-        print("Start on", time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()), "with interval", interval, "s.")
-        while True:
-            Manager.perform(review_client, keyword_client, review_range, keyword_range)
-            time.sleep(interval)
+        Manager.perform(review_client, keyword_client, review_range, keyword_range)
 
     @staticmethod
     def _validate_range_width(range_, width, error_msg="Invalid Range Width"):
@@ -58,7 +66,6 @@ class Manager:
         keyword_terms, keyword_indices = Manager.get_keyword_replacement(len(indices_to_replace), current_keyword_sheet)
 
         if len(indices_to_replace) == 0:
-            print(".")
             return
 
         Manager.replace_review_sheet(review_client, review_range, indices_to_replace, keyword_terms)

@@ -25,17 +25,41 @@ Manager.start()  # key in the information here.
 But sometimes re-keying the details repetitively might be too tiring,
 so you can also prepare the details in a dictionary and then call another function as below.
 ```python
-PH = {
-    'reviewSheetId': '1AjgnY_4uuwVyLYNHwxnr2UPHd93onAMnOD5veWFER20',  # the benchmark sheet, found in the URL
+countries =[{
+    'reviewSheetId': '1bD6BeGpAQxZk99Ai6vMlA0g1ljAZxtYyQ1bDFt7HGLY',
     'reviewSheetName': 'Benchmarking_new',
-    'keywordSheetId': '1kJbFGuONnP6d8J418d24_LvbVKD9BECwx03zaOD-WG0',  # the list of keywords sheet
+    'keywordSheetId': '1rkVXzuEU0644SBRXDPtjUryxJi4YTfBi-dzSclRoRKE',
     'keywordSheetName': 'to-benchmark',
-    'reviewRange': 'A5602:A5851',  # must only include the keywords section of this week
-    'keywordRange': 'A2:B1000',  # must only include the keywords along side the "checked" column
+    'reviewRange': 'A6402:A6701',
+    'keywordRange': 'A2:B1000',
     'interval': 600
-}
+}, {
+    'reviewSheetId': '15CvH8PBJUktYF46kQypDAd-xvkBP7X37BZiP3uTdX-Y',
+    'reviewSheetName': 'Benchmarking_new',
+    'keywordSheetId': '19ZPr49sEcKUHUPmvzTjeWvQ9yVBllsSVQ8hWvDo8qBs',
+    'keywordSheetName': 'to-benchmark',
+    'reviewRange': 'A5452:A5701',
+    'keywordRange': 'A2:B1000',
+    'interval': 600
+}, {
+    'reviewSheetId': '1sS9b6GwZjB0oQ9pvqDOoF-7Qpk3A2c9lyTGNR8hYvKI',
+    'reviewSheetName': 'Benchmarking_new',
+    'keywordSheetId': '1E4Sx0Hwe-cHFNdO6amVVQT4xyo2Iy4koArY8JHAPxHo',
+    'keywordSheetName': 'to-benchmark',
+    'reviewRange': 'A5444:A5693',
+    'keywordRange': 'A2:B800',
+    'interval': 600
+}, {
+    'reviewSheetId': '1AjgnY_4uuwVyLYNHwxnr2UPHd93onAMnOD5veWFER20',
+    'reviewSheetName': 'Benchmarking_new',
+    'keywordSheetId': '1kJbFGuONnP6d8J418d24_LvbVKD9BECwx03zaOD-WG0',
+    'keywordSheetName': 'to-benchmark',
+    'reviewRange': 'A5602:A5851',
+    'keywordRange': 'A2:B1000',
+    'interval': 600
+}]
 from manager import Manager
-Manager.main(PH)
+Manager.main_many(countries)
 ```
 
 ## Troubleshooting
